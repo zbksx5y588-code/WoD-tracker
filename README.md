@@ -1,1 +1,620 @@
-# WoD-tracker
+# WoD-tracker<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>WOD & Progress Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="WOD Tracker">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: #020617;
+      color: #e5e7eb;
+      padding: 1.25rem;
+    }
+
+    .app {
+      max-width: 960px;
+      margin: 0 auto 3rem auto;
+    }
+
+    header {
+      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+    }
+
+    header span {
+      font-size: 0.9rem;
+      color: #9ca3af;
+    }
+
+    .card {
+      background: radial-gradient(circle at top left, #111827, #020617 55%);
+      border-radius: 0.9rem;
+      padding: 1.25rem 1.4rem;
+      margin-bottom: 1rem;
+      border: 1px solid #1f2937;
+      box-shadow: 0 18px 45px rgba(0,0,0,0.45);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .wod-name {
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      font-size: 1rem;
+    }
+
+    .wod-description {
+      font-size: 0.95rem;
+      color: #d1d5db;
+      white-space: pre-line;
+      margin-bottom: 0.75rem;
+    }
+
+    .tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 0.15rem 0.55rem;
+      border-radius: 999px;
+      border: 1px solid #4b5563;
+      color: #9ca3af;
+      margin-right: 0.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 0.45rem 0.95rem;
+      cursor: pointer;
+      font-size: 0.9rem;
+      background: linear-gradient(to right, #22c55e, #4ade80);
+      color: #022c22;
+      font-weight: 600;
+      transition: transform 0.05s ease, box-shadow 0.05s ease, filter 0.1s ease;
+      box-shadow: 0 12px 25px rgba(34,197,94,0.35);
+      white-space: nowrap;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: #e5e7eb;
+      border: 1px solid #4b5563;
+      box-shadow: none;
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: none;
+      filter: brightness(0.95);
+    }
+
+    button + button {
+      margin-left: 0.5rem;
+    }
+
+    .wod-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-size: 0.8rem;
+      color: #9ca3af;
+      display: block;
+      margin-bottom: 0.25rem;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.55rem 0.65rem;
+      border-radius: 0.6rem;
+      border: 1px solid #4b5563;
+      background: #020617;
+      color: #e5e7eb;
+      font-size: 0.9rem;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #6b7280;
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 768px) {
+      .grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .log-filters {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .log-filters input {
+      max-width: 200px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.25rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 0.45rem 0.4rem;
+      border-bottom: 1px solid #111827;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      font-weight: 600;
+      color: #9ca3af;
+      white-space: nowrap;
+      background: #020617;
+    }
+
+    tr:nth-child(even) td {
+      background: rgba(15,23,42,0.65);
+    }
+
+    tr:nth-child(odd) td {
+      background: rgba(15,23,42,0.85);
+    }
+
+    tr:hover td {
+      filter: brightness(1.05);
+    }
+
+    .empty {
+      font-size: 0.85rem;
+      color: #6b7280;
+      padding: 0.5rem 0;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid #374151;
+      font-size: 0.75rem;
+      color: #9ca3af;
+    }
+
+    .small {
+      font-size: 0.8rem;
+      color: #6b7280;
+    }
+
+    .danger {
+      color: #fca5a5;
+    }
+
+    .footer-note {
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-align: right;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div>
+        <h1>WOD & Progress Tracker</h1>
+        <span>Random WOD + simple logging, stored locally on this device</span>
+      </div>
+      <button class="secondary" id="clear-data-btn" title="This clears all your saved logs">
+        Clear all data
+      </button>
+    </header>
+
+    <!-- WOD of the Day -->
+    <section class="card">
+      <h2>Workout of the Day</h2>
+      <div class="wod-name" id="wod-name"></div>
+      <div class="wod-description" id="wod-description"></div>
+      <div id="wod-tags"></div>
+
+      <div class="wod-actions">
+        <div class="small" id="wod-hint">
+          Tap “New random WOD” or just log what you actually did below.
+        </div>
+        <div>
+          <button id="random-wod-btn">New random WOD</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Log performance -->
+    <section class="card">
+      <h2>Log your performance</h2>
+      <form id="log-form">
+        <div class="grid grid-3">
+          <div>
+            <label for="log-date">Date</label>
+            <input type="date" id="log-date" required />
+          </div>
+          <div>
+            <label for="log-workout-name">Workout name</label>
+            <input type="text" id="log-workout-name" required placeholder="e.g. 21-15-9 Thrusters & Pull-ups" />
+          </div>
+          <div>
+            <label for="log-type">Type</label>
+            <select id="log-type">
+              <option value="For Time">For Time</option>
+              <option value="AMRAP">AMRAP</option>
+              <option value="Strength">Strength</option>
+              <option value="EMOM">EMOM</option>
+              <option value="Skill">Skill</option>
+              <option value="Other" selected>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-3" style="margin-top: 0.75rem;">
+          <div>
+            <label for="log-weight">Main weight (kg)</label>
+            <input type="number" id="log-weight" step="0.5" min="0" placeholder="e.g. 80" />
+          </div>
+          <div>
+            <label for="log-reps">Reps / rounds</label>
+            <input type="text" id="log-reps" placeholder="e.g. 5x5, 7 rounds, 120 reps" />
+          </div>
+          <div>
+            <label for="log-time">Time (mm:ss)</label>
+            <input type="text" id="log-time" placeholder="e.g. 12:34" />
+          </div>
+        </div>
+
+        <div style="margin-top: 0.75rem;">
+          <label for="log-notes">Notes</label>
+          <textarea id="log-notes" placeholder="How it felt, scaling, tweaks, PRs, etc."></textarea>
+        </div>
+
+        <div style="margin-top: 0.9rem; display: flex; justify-content: flex-end;">
+          <button type="submit">Save entry</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- History -->
+    <section class="card">
+      <div class="log-header">
+        <h2>History</h2>
+        <div class="log-filters">
+          <input type="text" id="filter-text" placeholder="Filter by workout or notes..." />
+          <button class="secondary" id="reset-filters-btn">Reset</button>
+        </div>
+      </div>
+
+      <div id="history-container">
+        <div class="empty">No entries yet. Log your first result above.</div>
+      </div>
+
+      <div class="footer-note">
+        Data stays on this device (browser storage).
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // ------- Sample WODs (edit freely) -------
+    const WODS = [
+      {
+        name: "Classic 21-15-9",
+        description: "21-15-9 reps for time of:\n- Thrusters (42.5/30kg)\n- Pull-ups",
+        tags: ["For Time", "Conditioning", "Legs", "Pull"]
+      },
+      {
+        name: "10 Min AMRAP",
+        description: "10 minute AMRAP of:\n- 10 Kettlebell swings (24/16kg)\n- 10 Goblet squats\n- 50m run",
+        tags: ["AMRAP", "Kettlebell", "Engine"]
+      },
+      {
+        name: "Heavy Back Squat 5x5",
+        description: "Back squat 5 sets of 5 reps\nBuild up to a heavy but tidy 5.",
+        tags: ["Strength", "Squat", "Barbell"]
+      },
+      {
+        name: "EMOM 12",
+        description: "Every minute on the minute for 12 minutes:\nOdd minutes: 8 burpees\nEven minutes: 12 wall balls",
+        tags: ["EMOM", "Conditioning"]
+      },
+      {
+        name: "Engine Builder",
+        description: "For time:\n- 1km row\n- 50 sit-ups\n- 1km run/ski",
+        tags: ["For Time", "Engine"]
+      },
+      {
+        name: "Chipper",
+        description: "For time:\n- 50 double-unders\n- 40 air squats\n- 30 sit-ups\n- 20 push-ups\n- 10 burpees",
+        tags: ["For Time", "Bodyweight"]
+      }
+    ];
+
+    const STORAGE_KEY = "wodTrackerLogsV1";
+
+    function getTodayString() {
+      const d = new Date();
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, "0");
+      const dd = String(d.getDate()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function loadLogs() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        console.error("Error loading logs", e);
+        return [];
+      }
+    }
+
+    function saveLogs(logs) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+      } catch (e) {
+        console.error("Error saving logs", e);
+      }
+    }
+
+    function randomWod() {
+      return WODS[Math.floor(Math.random() * WODS.length)];
+    }
+
+    function setWod(wod) {
+      const nameEl = document.getElementById("wod-name");
+      const descEl = document.getElementById("wod-description");
+      const tagsEl = document.getElementById("wod-tags");
+
+      nameEl.textContent = wod.name;
+      descEl.textContent = wod.description;
+
+      tagsEl.innerHTML = "";
+      if (wod.tags && wod.tags.length) {
+        wod.tags.forEach(tag => {
+          const span = document.createElement("span");
+          span.className = "tag";
+          span.textContent = tag;
+          tagsEl.appendChild(span);
+        });
+      }
+
+      const nameInput = document.getElementById("log-workout-name");
+      if (!nameInput.value || nameInput.dataset.autofilled === "true") {
+        nameInput.value = wod.name;
+        nameInput.dataset.autofilled = "true";
+      }
+    }
+
+    function formatDateHuman(isoDateString) {
+      if (!isoDateString) return "";
+      const [year, month, day] = isoDateString.split("-");
+      if (!year || !month || !day) return isoDateString;
+      const d = new Date(Number(year), Number(month) - 1, Number(day));
+      if (isNaN(d.getTime())) return isoDateString;
+      return d.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric"
+      });
+    }
+
+    function renderHistory(logs, filterText = "") {
+      const container = document.getElementById("history-container");
+      container.innerHTML = "";
+
+      let filtered = logs;
+      if (filterText) {
+        const lower = filterText.toLowerCase();
+        filtered = logs.filter(
+          l =>
+            (l.workoutName && l.workoutName.toLowerCase().includes(lower)) ||
+            (l.notes && l.notes.toLowerCase().includes(lower)) ||
+            (l.type && l.type.toLowerCase().includes(lower))
+        );
+      }
+
+      if (!filtered.length) {
+        const div = document.createElement("div");
+        div.className = "empty";
+        div.textContent = logs.length
+          ? "No entries match this filter."
+          : "No entries yet. Log your first result above.";
+        container.appendChild(div);
+        return;
+      }
+
+      // Sort by date desc then creation time desc
+      filtered = [...filtered].sort((a, b) => {
+        if (a.date === b.date) {
+          return (b.createdAt || 0) - (a.createdAt || 0);
+        }
+        return a.date < b.date ? 1 : -1;
+      });
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Date</th>
+          <th>Workout</th>
+          <th>Type</th>
+          <th>Weight</th>
+          <th>Reps / Rounds</th>
+          <th>Time</th>
+          <th>Notes</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      filtered.forEach(log => {
+        const tr = document.createElement("tr");
+        const humanDate = formatDateHuman(log.date);
+        const weightText = log.weight ? `${log.weight} kg` : "";
+        tr.innerHTML = `
+          <td>${humanDate}</td>
+          <td>${log.workoutName || ""}</td>
+          <td>${log.type ? `<span class="pill">${log.type}</span>` : ""}</td>
+          <td>${weightText}</td>
+          <td>${log.reps || ""}</td>
+          <td>${log.time || ""}</td>
+          <td>${log.notes || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      container.appendChild(table);
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const randomBtn = document.getElementById("random-wod-btn");
+      const logForm = document.getElementById("log-form");
+      const clearBtn = document.getElementById("clear-data-btn");
+      const filterInput = document.getElementById("filter-text");
+      const resetFiltersBtn = document.getElementById("reset-filters-btn");
+      const dateInput = document.getElementById("log-date");
+
+      dateInput.value = getTodayString();
+
+      let logs = loadLogs();
+      renderHistory(logs);
+
+      setWod(randomWod());
+
+      randomBtn.addEventListener("click", () => {
+        setWod(randomWod());
+      });
+
+      logForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const date = dateInput.value;
+        const workoutNameEl = document.getElementById("log-workout-name");
+        const workoutName = workoutNameEl.value.trim();
+        const type = document.getElementById("log-type").value;
+        const weight = document.getElementById("log-weight").value;
+        const reps = document.getElementById("log-reps").value.trim();
+        const time = document.getElementById("log-time").value.trim();
+        const notes = document.getElementById("log-notes").value.trim();
+
+        if (!date || !workoutName) {
+          alert("Date and workout name are required.");
+          return;
+        }
+
+        const entry = {
+          id: Date.now(),
+          date,
+          workoutName,
+          type,
+          weight: weight ? Number(weight) : null,
+          reps,
+          time,
+          notes,
+          createdAt: Date.now()
+        };
+
+        logs.push(entry);
+        saveLogs(logs);
+        renderHistory(logs, filterInput.value.trim());
+
+        // Light reset: keep date & name, clear the rest
+        document.getElementById("log-weight").value = "";
+        document.getElementById("log-reps").value = "";
+        document.getElementById("log-time").value = "";
+        document.getElementById("log-notes").value = "";
+        workoutNameEl.dataset.autofilled = "false";
+      });
+
+      clearBtn.addEventListener("click", () => {
+        const sure = confirm("This will delete all saved logs in this browser on this device. Continue?");
+        if (!sure) return;
+        logs = [];
+        saveLogs(logs);
+        renderHistory(logs, filterInput.value.trim());
+      });
+
+      filterInput.addEventListener("input", () => {
+        const text = filterInput.value.trim();
+        renderHistory(logs, text);
+      });
+
+      resetFiltersBtn.addEventListener("click", () => {
+        filterInput.value = "";
+        renderHistory(logs, "");
+      });
+    });
+  </script>
+</body>
+</html>
