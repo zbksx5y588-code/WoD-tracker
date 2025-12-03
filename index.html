@@ -1,4 +1,4 @@
-# WoD-tracker<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -35,6 +35,29 @@
       flex-wrap: wrap;
     }
 
+    header-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .logo-wrap {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: radial-gradient(circle at 30% 20%, #22c55e, #16a34a 40%, #065f46 80%);
+      box-shadow: 0 0 0 2px #022c22, 0 12px 25px rgba(0,0,0,0.6);
+      flex-shrink: 0;
+    }
+
+    .logo-emoji {
+      font-size: 1.3rem;
+      transform: translateY(1px);
+    }
+
     header h1 {
       font-size: 1.7rem;
       font-weight: 700;
@@ -43,6 +66,7 @@
     header span {
       font-size: 0.9rem;
       color: #9ca3af;
+      display: block;
     }
 
     .card {
@@ -83,6 +107,11 @@
       margin-bottom: 0.25rem;
     }
 
+    .tag-hero {
+      border-color: #f97316;
+      color: #fed7aa;
+    }
+
     button,
     input,
     select,
@@ -109,6 +138,11 @@
       color: #e5e7eb;
       border: 1px solid #4b5563;
       box-shadow: none;
+    }
+
+    button.timer-main {
+      width: 100%;
+      justify-content: center;
     }
 
     button:active {
@@ -244,6 +278,11 @@
       color: #9ca3af;
     }
 
+    .pill-pr {
+      border-color: #22c55e;
+      color: #bbf7d0;
+    }
+
     .small {
       font-size: 0.8rem;
       color: #6b7280;
@@ -259,14 +298,86 @@
       color: #6b7280;
       text-align: right;
     }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .timer-mode {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: 0.2rem;
+      background: #020617;
+      border: 1px solid #374151;
+      margin-bottom: 0.6rem;
+    }
+
+    .timer-mode button {
+      flex: 1;
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.75rem;
+      background: transparent;
+      box-shadow: none;
+      border: none;
+      color: #9ca3af;
+    }
+
+    .timer-mode button.active {
+      background: #22c55e;
+      color: #022c22;
+      box-shadow: 0 8px 18px rgba(34,197,94,0.35);
+    }
+
+    .timer-controls {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .timer-controls button {
+      flex: 1;
+      text-align: center;
+    }
+
+    .timer-inputs {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .timer-inputs input {
+      width: 4rem;
+      text-align: center;
+    }
+
+    .timer-label {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-align: center;
+      margin-bottom: 0.3rem;
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header>
-      <div>
-        <h1>WOD & Progress Tracker</h1>
-        <span>Random WOD + simple logging, stored locally on this device</span>
+      <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+        <div class="logo-wrap">
+          <span class="logo-emoji">🏋️‍♂️</span>
+        </div>
+        <div>
+          <h1>WOD & Progress Tracker</h1>
+          <span>Random WOD, hero workouts, logging & PRs – all local</span>
+        </div>
       </div>
       <button class="secondary" id="clear-data-btn" title="This clears all your saved logs">
         Clear all data
@@ -282,10 +393,48 @@
 
       <div class="wod-actions">
         <div class="small" id="wod-hint">
-          Tap “New random WOD” or just log what you actually did below.
+          Tap a WOD button or just log what you actually did below.
         </div>
         <div>
           <button id="random-wod-btn">New random WOD</button>
+          <button class="secondary" id="hero-wod-btn">Hero WOD</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timer -->
+    <section class="card">
+      <h2>Timer</h2>
+      <div class="timer-mode">
+        <button id="mode-stopwatch" class="active" type="button">Stopwatch</button>
+        <button id="mode-countdown" type="button">Countdown</button>
+      </div>
+
+      <div class="timer-display" id="timer-display">00:00</div>
+
+      <div class="timer-inputs" id="countdown-inputs" style="display:none;">
+        <div>
+          <div class="timer-label">Minutes</div>
+          <input type="number" id="timer-minutes" min="0" max="999" value="10">
+        </div>
+        <div>
+          <div class="timer-label">Seconds</div>
+          <input type="number" id="timer-seconds" min="0" max="59" value="0">
+        </div>
+      </div>
+
+      <div class="timer-controls">
+        <button id="timer-start" type="button">Start</button>
+        <button id="timer-pause" class="secondary" type="button">Pause</button>
+        <button id="timer-reset" class="secondary" type="button">Reset</button>
+      </div>
+
+      <div style="margin-top:0.6rem;display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <button id="timer-to-log" class="secondary" type="button">
+          Send time to log
+        </button>
+        <div class="small" style="flex:1;min-width:140px;">
+          Use stopwatch for AMRAPs / for time. Countdown for EMOMs or caps.
         </div>
       </div>
     </section>
@@ -301,7 +450,7 @@
           </div>
           <div>
             <label for="log-workout-name">Workout name</label>
-            <input type="text" id="log-workout-name" required placeholder="e.g. 21-15-9 Thrusters & Pull-ups" />
+            <input type="text" id="log-workout-name" required placeholder="e.g. Fran, Heavy Squat, 10 Min AMRAP" />
           </div>
           <div>
             <label for="log-type">Type</label>
@@ -345,9 +494,9 @@
     <!-- History -->
     <section class="card">
       <div class="log-header">
-        <h2>History</h2>
+        <h2>History & PRs</h2>
         <div class="log-filters">
-          <input type="text" id="filter-text" placeholder="Filter by workout or notes..." />
+          <input type="text" id="filter-text" placeholder="Filter by workout, notes, type..." />
           <button class="secondary" id="reset-filters-btn">Reset</button>
         </div>
       </div>
@@ -357,23 +506,25 @@
       </div>
 
       <div class="footer-note">
-        Data stays on this device (browser storage).
+        <span class="pill pill-pr" style="margin-right:0.3rem;">PR</span> = new best weight for that Strength workout.
+        Data stays on this device.
       </div>
     </section>
   </div>
 
   <script>
-    // ------- Sample WODs (edit freely) -------
+    // ------- Sample WODs: including Hero workouts -------
     const WODS = [
-      {
-        name: "Classic 21-15-9",
-        description: "21-15-9 reps for time of:\n- Thrusters (42.5/30kg)\n- Pull-ups",
-        tags: ["For Time", "Conditioning", "Legs", "Pull"]
-      },
+      // Regular
       {
         name: "10 Min AMRAP",
         description: "10 minute AMRAP of:\n- 10 Kettlebell swings (24/16kg)\n- 10 Goblet squats\n- 50m run",
         tags: ["AMRAP", "Kettlebell", "Engine"]
+      },
+      {
+        name: "Engine Builder",
+        description: "For time:\n- 1km row\n- 50 sit-ups\n- 1km run/ski",
+        tags: ["For Time", "Engine"]
       },
       {
         name: "Heavy Back Squat 5x5",
@@ -385,19 +536,40 @@
         description: "Every minute on the minute for 12 minutes:\nOdd minutes: 8 burpees\nEven minutes: 12 wall balls",
         tags: ["EMOM", "Conditioning"]
       },
+      // Hero-style
       {
-        name: "Engine Builder",
-        description: "For time:\n- 1km row\n- 50 sit-ups\n- 1km run/ski",
-        tags: ["For Time", "Engine"]
+        name: "Murph (Partitioned)",
+        description: "For time:\n- 1 mile run\n- 100 pull-ups\n- 200 push-ups\n- 300 air squats\n- 1 mile run\nPartition the reps as needed. Wear a weight vest if you usually do.",
+        tags: ["Hero", "For Time", "Big Chipper"],
+        hero: true
       },
       {
-        name: "Chipper",
-        description: "For time:\n- 50 double-unders\n- 40 air squats\n- 30 sit-ups\n- 20 push-ups\n- 10 burpees",
-        tags: ["For Time", "Bodyweight"]
+        name: "Fran",
+        description: "21-15-9 reps for time of:\n- Thrusters (42.5/30kg)\n- Pull-ups",
+        tags: ["Hero", "For Time", "Gas"],
+        hero: true
+      },
+      {
+        name: "Helen",
+        description: "3 rounds for time of:\n- 400m run\n- 21 kettlebell swings (24/16kg)\n- 12 pull-ups",
+        tags: ["Hero", "For Time", "Engine"],
+        hero: true
+      },
+      {
+        name: "DT",
+        description: "5 rounds for time of:\n- 12 deadlifts (70/47.5kg)\n- 9 hang power cleans\n- 6 push jerks",
+        tags: ["Hero", "For Time", "Barbell"],
+        hero: true
+      },
+      {
+        name: "Annie",
+        description: "50-40-30-20-10 reps for time of:\n- Double-unders\n- Sit-ups",
+        tags: ["Hero", "For Time", "Core"],
+        hero: true
       }
     ];
 
-    const STORAGE_KEY = "wodTrackerLogsV1";
+    const STORAGE_KEY = "wodTrackerLogsV2";
 
     function getTodayString() {
       const d = new Date();
@@ -409,10 +581,19 @@
 
     function loadLogs() {
       try {
+        // Try new key first
         const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return [];
-        const parsed = JSON.parse(raw);
-        return Array.isArray(parsed) ? parsed : [];
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        }
+        // Fallback: migrate from old key if it exists
+        const oldRaw = localStorage.getItem("wodTrackerLogsV1");
+        if (!oldRaw) return [];
+        const oldParsed = JSON.parse(oldRaw);
+        const migrated = Array.isArray(oldParsed) ? oldParsed : [];
+        saveLogs(migrated);
+        return migrated;
       } catch (e) {
         console.error("Error loading logs", e);
         return [];
@@ -431,6 +612,12 @@
       return WODS[Math.floor(Math.random() * WODS.length)];
     }
 
+    function heroWod() {
+      const heroes = WODS.filter(w => w.hero);
+      if (!heroes.length) return randomWod();
+      return heroes[Math.floor(Math.random() * heroes.length)];
+    }
+
     function setWod(wod) {
       const nameEl = document.getElementById("wod-name");
       const descEl = document.getElementById("wod-description");
@@ -444,6 +631,9 @@
         wod.tags.forEach(tag => {
           const span = document.createElement("span");
           span.className = "tag";
+          if (tag.toLowerCase() === "hero") {
+            span.classList.add("tag-hero");
+          }
           span.textContent = tag;
           tagsEl.appendChild(span);
         });
@@ -494,13 +684,12 @@
         return;
       }
 
-      // Sort by date desc then creation time desc
       filtered = [...filtered].sort((a, b) => {
         if (a.date === b.date) {
           return (b.createdAt || 0) - (a.createdAt || 0);
         }
         return a.date < b.date ? 1 : -1;
-      });
+      }).reverse(); // newest first
 
       const table = document.createElement("table");
       const thead = document.createElement("thead");
@@ -522,10 +711,16 @@
         const tr = document.createElement("tr");
         const humanDate = formatDateHuman(log.date);
         const weightText = log.weight ? `${log.weight} kg` : "";
+        const typePill = log.type
+          ? `<span class="pill">${log.type}</span>`
+          : "";
+        const prPill = log.isPR
+          ? `<span class="pill pill-pr" style="margin-left:0.25rem;">PR</span>`
+          : "";
         tr.innerHTML = `
           <td>${humanDate}</td>
           <td>${log.workoutName || ""}</td>
-          <td>${log.type ? `<span class="pill">${log.type}</span>` : ""}</td>
+          <td>${typePill}${prPill}</td>
           <td>${weightText}</td>
           <td>${log.reps || ""}</td>
           <td>${log.time || ""}</td>
@@ -538,13 +733,91 @@
       container.appendChild(table);
     }
 
+    // ---------- Timer logic ----------
+    let timerMode = "stopwatch"; // or "countdown"
+    let timerRunning = false;
+    let timerValueMs = 0;
+    let timerTargetMs = 0;
+    let timerInterval = null;
+
+    function msToMMSS(ms) {
+      if (ms < 0) ms = 0;
+      const totalSeconds = Math.floor(ms / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+
+    function updateTimerDisplay() {
+      const display = document.getElementById("timer-display");
+      display.textContent = msToMMSS(timerValueMs);
+    }
+
+    function startTimer() {
+      if (timerRunning) return;
+      timerRunning = true;
+      const tick = () => {
+        if (!timerRunning) return;
+        if (timerMode === "stopwatch") {
+          timerValueMs += 200;
+        } else {
+          timerValueMs -= 200;
+          if (timerValueMs <= 0) {
+            timerValueMs = 0;
+            timerRunning = false;
+            clearInterval(timerInterval);
+            alert("Time!");
+          }
+        }
+        updateTimerDisplay();
+      };
+      timerInterval = setInterval(tick, 200);
+    }
+
+    function pauseTimer() {
+      timerRunning = false;
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      if (timerMode === "stopwatch") {
+        timerValueMs = 0;
+      } else {
+        timerValueMs = timerTargetMs;
+      }
+      updateTimerDisplay();
+    }
+
+    function setCountdownFromInputs() {
+      const min = parseInt(document.getElementById("timer-minutes").value || "0", 10);
+      const sec = parseInt(document.getElementById("timer-seconds").value || "0", 10);
+      const ms = (min * 60 + sec) * 1000;
+      timerTargetMs = ms;
+      timerValueMs = ms;
+      updateTimerDisplay();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const randomBtn = document.getElementById("random-wod-btn");
+      const heroBtn = document.getElementById("hero-wod-btn");
       const logForm = document.getElementById("log-form");
       const clearBtn = document.getElementById("clear-data-btn");
       const filterInput = document.getElementById("filter-text");
       const resetFiltersBtn = document.getElementById("reset-filters-btn");
       const dateInput = document.getElementById("log-date");
+
+      // Timer elements
+      const modeStopwatchBtn = document.getElementById("mode-stopwatch");
+      const modeCountdownBtn = document.getElementById("mode-countdown");
+      const countdownInputs = document.getElementById("countdown-inputs");
+      const timerStartBtn = document.getElementById("timer-start");
+      const timerPauseBtn = document.getElementById("timer-pause");
+      const timerResetBtn = document.getElementById("timer-reset");
+      const timerToLogBtn = document.getElementById("timer-to-log");
 
       dateInput.value = getTodayString();
 
@@ -557,13 +830,17 @@
         setWod(randomWod());
       });
 
+      heroBtn.addEventListener("click", () => {
+        setWod(heroWod());
+      });
+
       logForm.addEventListener("submit", (e) => {
         e.preventDefault();
         const date = dateInput.value;
         const workoutNameEl = document.getElementById("log-workout-name");
         const workoutName = workoutNameEl.value.trim();
         const type = document.getElementById("log-type").value;
-        const weight = document.getElementById("log-weight").value;
+        const weightVal = document.getElementById("log-weight").value;
         const reps = document.getElementById("log-reps").value.trim();
         const time = document.getElementById("log-time").value.trim();
         const notes = document.getElementById("log-notes").value.trim();
@@ -573,15 +850,35 @@
           return;
         }
 
+        let numericWeight = null;
+        if (weightVal) {
+          const n = Number(weightVal);
+          if (!isNaN(n)) numericWeight = n;
+        }
+
+        let isPR = false;
+        if (type === "Strength" && numericWeight !== null) {
+          const prevMax = logs
+            .filter(l => l.type === "Strength" && l.workoutName === workoutName && l.weight != null)
+            .reduce((max, l) => {
+              const w = Number(l.weight) || 0;
+              return w > max ? w : max;
+            }, 0);
+          if (numericWeight > prevMax) {
+            isPR = true;
+          }
+        }
+
         const entry = {
           id: Date.now(),
           date,
           workoutName,
           type,
-          weight: weight ? Number(weight) : null,
+          weight: numericWeight,
           reps,
           time,
           notes,
+          isPR,
           createdAt: Date.now()
         };
 
@@ -589,12 +886,15 @@
         saveLogs(logs);
         renderHistory(logs, filterInput.value.trim());
 
-        // Light reset: keep date & name, clear the rest
         document.getElementById("log-weight").value = "";
         document.getElementById("log-reps").value = "";
         document.getElementById("log-time").value = "";
         document.getElementById("log-notes").value = "";
         workoutNameEl.dataset.autofilled = "false";
+
+        if (isPR) {
+          alert("Nice! New PR recorded for " + workoutName + ".");
+        }
       });
 
       clearBtn.addEventListener("click", () => {
@@ -613,6 +913,53 @@
       resetFiltersBtn.addEventListener("click", () => {
         filterInput.value = "";
         renderHistory(logs, "");
+      });
+
+      // Timer wiring
+      updateTimerDisplay();
+
+      modeStopwatchBtn.addEventListener("click", () => {
+        if (timerMode === "stopwatch") return;
+        timerMode = "stopwatch";
+        modeStopwatchBtn.classList.add("active");
+        modeCountdownBtn.classList.remove("active");
+        countdownInputs.style.display = "none";
+        pauseTimer();
+        timerValueMs = 0;
+        updateTimerDisplay();
+      });
+
+      modeCountdownBtn.addEventListener("click", () => {
+        if (timerMode === "countdown") return;
+        timerMode = "countdown";
+        modeCountdownBtn.classList.add("active");
+        modeStopwatchBtn.classList.remove("active");
+        countdownInputs.style.display = "flex";
+        pauseTimer();
+        setCountdownFromInputs();
+      });
+
+      document.getElementById("timer-minutes").addEventListener("change", setCountdownFromInputs);
+      document.getElementById("timer-seconds").addEventListener("change", setCountdownFromInputs);
+
+      timerStartBtn.addEventListener("click", () => {
+        if (timerMode === "countdown") {
+          setCountdownFromInputs();
+        }
+        startTimer();
+      });
+
+      timerPauseBtn.addEventListener("click", () => {
+        pauseTimer();
+      });
+
+      timerResetBtn.addEventListener("click", () => {
+        resetTimer();
+      });
+
+      timerToLogBtn.addEventListener("click", () => {
+        const timeStr = msToMMSS(timerValueMs);
+        document.getElementById("log-time").value = timeStr;
       });
     });
   </script>
