@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>WOD & Progress Tracker</title>
+  <title>🏋️ WOD & Progress Tracker</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -35,36 +35,19 @@
       flex-wrap: wrap;
     }
 
-    .header-main {
-      display: flex;
-      align-items: center;
-      gap: 0.85rem;
-    }
-
-    .logo-circle {
-      width: 40px;
-      height: 40px;
-      border-radius: 999px;
-      background: radial-gradient(circle at 30% 20%, #22c55e, #065f46 55%, #022c22 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 12px 30px rgba(34, 197, 94, 0.45);
-      border: 1px solid rgba(16, 185, 129, 0.8);
-    }
-
-    .logo-circle svg {
-      width: 22px;
-      height: 22px;
-      fill: #ecfdf5;
-    }
-
     header h1 {
       font-size: 1.7rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    header span {
+    header h1 span.logo {
+      font-size: 1.8rem;
+    }
+
+    header span.subtitle {
       font-size: 0.9rem;
       color: #9ca3af;
     }
@@ -81,6 +64,13 @@
     .card h2 {
       font-size: 1.1rem;
       margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .card h2 span.icon {
+      font-size: 1.1rem;
     }
 
     .wod-name {
@@ -132,6 +122,13 @@
       background: transparent;
       color: #e5e7eb;
       border: 1px solid #4b5563;
+      box-shadow: none;
+    }
+
+    button.danger {
+      background: transparent;
+      color: #fecaca;
+      border: 1px solid #f97373;
       box-shadow: none;
     }
 
@@ -273,52 +270,74 @@
       color: #6b7280;
     }
 
-    .danger {
-      color: #fca5a5;
-    }
-
     .footer-note {
       margin-top: 0.5rem;
       font-size: 0.75rem;
       color: #6b7280;
       text-align: right;
     }
+
+    .timer-display {
+      font-size: 2rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-align: center;
+      margin: 0.5rem 0 0.75rem;
+    }
+
+    .timer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+
+    .section-note {
+      font-size: 0.75rem;
+      color: #9ca3af;
+      margin-bottom: 0.4rem;
+    }
   </style>
 </head>
 <body>
   <div class="app">
     <header>
-      <div class="header-main">
-        <div class="logo-circle" aria-hidden="true">
-          <!-- Simple barbell icon as inline SVG -->
-          <svg viewBox="0 0 64 64">
-            <rect x="10" y="26" width="6" height="12" rx="1"></rect>
-            <rect x="48" y="26" width="6" height="12" rx="1"></rect>
-            <rect x="18" y="28" width="28" height="8" rx="2"></rect>
-            <rect x="7" y="24" width="3" height="16" rx="1"></rect>
-            <rect x="54" y="24" width="3" height="16" rx="1"></rect>
-          </svg>
-        </div>
-        <div>
-          <h1>WOD & Progress Tracker</h1>
-          <span>Random WOD + simple logging, stored locally on this device</span>
-        </div>
+      <div>
+        <h1><span class="logo">🏋️</span>WOD & Progress Tracker</h1>
+        <span class="subtitle">Random WODs, hero workouts, timer & PRs — all stored locally on this device</span>
       </div>
-      <button class="secondary" id="clear-data-btn" title="This clears all your saved logs">
-        Clear all data
+      <button class="secondary" id="clear-data-btn" title="This clears all your saved workout logs">
+        Clear all logs
       </button>
     </header>
 
     <!-- WOD of the Day -->
     <section class="card">
-      <h2>Workout of the Day</h2>
+      <h2><span class="icon">🔥</span>Workout of the Day</h2>
+
+      <div class="grid grid-2" style="margin-bottom: 0.75rem;">
+        <div>
+          <label for="wod-mode">WOD pool</label>
+          <select id="wod-mode">
+            <option value="all">All WODs</option>
+            <option value="regular">Regular only</option>
+            <option value="hero">Hero WODs only</option>
+          </select>
+        </div>
+        <div>
+          <span class="section-note">
+            Hero WODs are marked with a 🕯️ tag and usually tougher / longer.
+          </span>
+        </div>
+      </div>
+
       <div class="wod-name" id="wod-name"></div>
       <div class="wod-description" id="wod-description"></div>
       <div id="wod-tags"></div>
 
       <div class="wod-actions">
         <div class="small" id="wod-hint">
-          Tap “New random WOD” or just log what you actually did below.
+          Tap “New random WOD” or ignore it and just log what you actually did below.
         </div>
         <div>
           <button id="random-wod-btn">New random WOD</button>
@@ -326,9 +345,24 @@
       </div>
     </section>
 
+    <!-- Timer -->
+    <section class="card">
+      <h2><span class="icon">⏱️</span>Workout Timer</h2>
+      <div class="section-note">
+        Simple stopwatch for “for time” pieces. Send the result into the log with one tap.
+      </div>
+      <div class="timer-display" id="timer-display">00:00</div>
+      <div class="timer-controls">
+        <button id="timer-start-btn">Start</button>
+        <button class="secondary" id="timer-pause-btn">Pause</button>
+        <button class="secondary" id="timer-reset-btn">Reset</button>
+        <button class="secondary" id="timer-to-log-btn">Send to Time field</button>
+      </div>
+    </section>
+
     <!-- Log performance -->
     <section class="card">
-      <h2>Log your performance</h2>
+      <h2><span class="icon">📋</span>Log your performance</h2>
       <form id="log-form">
         <div class="grid grid-3">
           <div>
@@ -337,7 +371,7 @@
           </div>
           <div>
             <label for="log-workout-name">Workout name</label>
-            <input type="text" id="log-workout-name" required placeholder="e.g. 21-15-9 Thrusters & Pull-ups" />
+            <input type="text" id="log-workout-name" required placeholder="e.g. Fran, Heavy Back Squat, Intervals" />
           </div>
           <div>
             <label for="log-type">Type</label>
@@ -363,7 +397,7 @@
           </div>
           <div>
             <label for="log-time">Time (mm:ss)</label>
-            <input type="text" id="log-time" placeholder="e.g. 12:34" />
+            <input type="text" id="log-time" placeholder="e.g. 12:34 or 25:00" />
           </div>
         </div>
 
@@ -381,9 +415,9 @@
     <!-- History -->
     <section class="card">
       <div class="log-header">
-        <h2>History</h2>
+        <h2><span class="icon">📆</span>History</h2>
         <div class="log-filters">
-          <input type="text" id="filter-text" placeholder="Filter by workout or notes..." />
+          <input type="text" id="filter-text" placeholder="Filter by workout, notes, type..." />
           <button class="secondary" id="reset-filters-btn">Reset</button>
         </div>
       </div>
@@ -393,47 +427,130 @@
       </div>
 
       <div class="footer-note">
-        Data stays on this device (browser storage).
+        Workout logs are stored only in this browser (local storage).
+      </div>
+    </section>
+
+    <!-- PR Tracker -->
+    <section class="card">
+      <div class="log-header">
+        <h2><span class="icon">🏆</span>PR Tracker</h2>
+        <button class="secondary" id="clear-prs-btn">Clear PR list</button>
+      </div>
+
+      <form id="pr-form" style="margin-bottom: 0.8rem;">
+        <div class="grid grid-3">
+          <div>
+            <label for="pr-movement">Movement / workout</label>
+            <input type="text" id="pr-movement" required placeholder="e.g. Back Squat, Fran, 2k Row" />
+          </div>
+          <div>
+            <label for="pr-type">Type</label>
+            <select id="pr-type">
+              <option value="Weight">Weight</option>
+              <option value="Time">Time</option>
+              <option value="Reps">Reps</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div>
+            <label for="pr-value">Value</label>
+            <input type="text" id="pr-value" required placeholder="e.g. 140kg, 7:05, 25 reps" />
+          </div>
+        </div>
+        <div style="margin-top: 0.75rem;">
+          <label for="pr-notes">Notes</label>
+          <textarea id="pr-notes" placeholder="Context, bodyweight, conditions, etc."></textarea>
+        </div>
+        <div style="margin-top: 0.75rem; display: flex; justify-content: flex-end;">
+          <button type="submit">Save PR</button>
+        </div>
+      </form>
+
+      <div class="log-filters" style="margin-bottom: 0.5rem;">
+        <input type="text" id="pr-filter-text" placeholder="Filter PRs by movement or type..." />
+        <button class="secondary" id="pr-reset-filters-btn">Reset</button>
+      </div>
+
+      <div id="pr-container">
+        <div class="empty">No PRs yet. Add your first benchmark above.</div>
+      </div>
+
+      <div class="footer-note">
+        PRs are also stored only on this device. If you clear browser data, they’ll be removed.
       </div>
     </section>
   </div>
 
   <script>
-    // ------- Sample WODs (edit freely) -------
+    // ------- Sample WODs (regular + hero) -------
     const WODS = [
+      // Regular
       {
         name: "Classic 21-15-9",
-        description: "21-15-9 reps for time of:\\n- Thrusters (42.5/30kg)\\n- Pull-ups",
-        tags: ["For Time", "Conditioning", "Legs", "Pull"]
+        description: "21-15-9 reps for time of:\n- Thrusters (42.5/30kg)\n- Pull-ups",
+        tags: ["For Time", "Conditioning", "Legs", "Pull"],
+        isHero: false
       },
       {
         name: "10 Min AMRAP",
-        description: "10 minute AMRAP of:\\n- 10 Kettlebell swings (24/16kg)\\n- 10 Goblet squats\\n- 50m run",
-        tags: ["AMRAP", "Kettlebell", "Engine"]
+        description: "10 minute AMRAP of:\n- 10 Kettlebell swings (24/16kg)\n- 10 Goblet squats\n- 50m run",
+        tags: ["AMRAP", "Kettlebell", "Engine"],
+        isHero: false
       },
       {
         name: "Heavy Back Squat 5x5",
-        description: "Back squat 5 sets of 5 reps\\nBuild up to a heavy but tidy 5.",
-        tags: ["Strength", "Squat", "Barbell"]
+        description: "Back squat 5 sets of 5 reps\nBuild up to a heavy but tidy 5.",
+        tags: ["Strength", "Squat", "Barbell"],
+        isHero: false
       },
       {
-        name: "EMOM 12",
-        description: "Every minute on the minute for 12 minutes:\\nOdd minutes: 8 burpees\\nEven minutes: 12 wall balls",
-        tags: ["EMOM", "Conditioning"]
+        name: "EMOM 12 Burpees & Wall Balls",
+        description: "Every minute on the minute for 12 minutes:\nOdd minutes: 8 burpees\nEven minutes: 12 wall balls",
+        tags: ["EMOM", "Conditioning"],
+        isHero: false
       },
       {
         name: "Engine Builder",
-        description: "For time:\\n- 1km row\\n- 50 sit-ups\\n- 1km run/ski",
-        tags: ["For Time", "Engine"]
+        description: "For time:\n- 1km row\n- 50 sit-ups\n- 1km run/ski",
+        tags: ["For Time", "Engine"],
+        isHero: false
       },
       {
         name: "Chipper",
-        description: "For time:\\n- 50 double-unders\\n- 40 air squats\\n- 30 sit-ups\\n- 20 push-ups\\n- 10 burpees",
-        tags: ["For Time", "Bodyweight"]
+        description: "For time:\n- 50 double-unders\n- 40 air squats\n- 30 sit-ups\n- 20 push-ups\n- 10 burpees",
+        tags: ["For Time", "Bodyweight"],
+        isHero: false
+      },
+      // Hero WODs (simplified versions)
+      {
+        name: "Murph (partitioned)",
+        description: "For time:\n- 1 mile run\n- 100 pull-ups\n- 200 push-ups\n- 300 air squats\n- 1 mile run\nPartition the reps as needed.\nRX with 9/6kg vest.",
+        tags: ["Hero", "For Time", "Long"],
+        isHero: true
+      },
+      {
+        name: "Fran",
+        description: "21-15-9 reps for time of:\n- Thrusters (42.5/30kg)\n- Pull-ups",
+        tags: ["Hero", "For Time", "Classic"],
+        isHero: true
+      },
+      {
+        name: "Cindy",
+        description: "20 minute AMRAP of:\n- 5 pull-ups\n- 10 push-ups\n- 15 air squats",
+        tags: ["Hero", "AMRAP", "Bodyweight"],
+        isHero: true
+      },
+      {
+        name: "DT",
+        description: "5 rounds for time of:\n- 12 deadlifts (70/47.5kg)\n- 9 hang power cleans\n- 6 push jerks",
+        tags: ["Hero", "Barbell", "For Time"],
+        isHero: true
       }
     ];
 
-    const STORAGE_KEY = "wodTrackerLogsV1";
+    const STORAGE_KEY_LOGS = "wodTrackerLogsV2";
+    const STORAGE_KEY_PRS = "wodTrackerPRsV1";
 
     function getTodayString() {
       const d = new Date();
@@ -443,28 +560,40 @@
       return `${yyyy}-${mm}-${dd}`;
     }
 
-    function loadLogs() {
+    function loadFromStorage(key) {
       try {
-        const raw = localStorage.getItem(STORAGE_KEY);
+        const raw = localStorage.getItem(key);
         if (!raw) return [];
         const parsed = JSON.parse(raw);
         return Array.isArray(parsed) ? parsed : [];
       } catch (e) {
-        console.error("Error loading logs", e);
+        console.error("Error loading from storage", key, e);
         return [];
       }
     }
 
-    function saveLogs(logs) {
+    function saveToStorage(key, value) {
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(logs));
+        localStorage.setItem(key, JSON.stringify(value));
       } catch (e) {
-        console.error("Error saving logs", e);
+        console.error("Error saving to storage", key, e);
       }
     }
 
-    function randomWod() {
-      return WODS[Math.floor(Math.random() * WODS.length)];
+    function getWodsByMode(mode) {
+      if (mode === "regular") {
+        return WODS.filter(w => !w.isHero);
+      }
+      if (mode === "hero") {
+        return WODS.filter(w => w.isHero);
+      }
+      return WODS;
+    }
+
+    function randomWod(mode) {
+      const pool = getWodsByMode(mode);
+      if (!pool.length) return null;
+      return pool[Math.floor(Math.random() * pool.length)];
     }
 
     function setWod(wod) {
@@ -472,10 +601,23 @@
       const descEl = document.getElementById("wod-description");
       const tagsEl = document.getElementById("wod-tags");
 
+      if (!wod) {
+        nameEl.textContent = "No WODs in this pool.";
+        descEl.textContent = "Try switching the WOD pool above.";
+        tagsEl.innerHTML = "";
+        return;
+      }
+
       nameEl.textContent = wod.name;
       descEl.textContent = wod.description;
 
       tagsEl.innerHTML = "";
+      if (wod.isHero) {
+        const heroTag = document.createElement("span");
+        heroTag.className = "tag";
+        heroTag.textContent = "🕯️ Hero WOD";
+        tagsEl.appendChild(heroTag);
+      }
       if (wod.tags && wod.tags.length) {
         wod.tags.forEach(tag => {
           const span = document.createElement("span");
@@ -530,7 +672,6 @@
         return;
       }
 
-      // Sort by date desc then creation time desc
       filtered = [...filtered].sort((a, b) => {
         if (a.date === b.date) {
           return (b.createdAt || 0) - (a.createdAt || 0);
@@ -574,29 +715,142 @@
       container.appendChild(table);
     }
 
+    function renderPRs(prs, filterText = "") {
+      const container = document.getElementById("pr-container");
+      container.innerHTML = "";
+
+      let filtered = prs;
+      if (filterText) {
+        const lower = filterText.toLowerCase();
+        filtered = prs.filter(
+          p =>
+            (p.movement && p.movement.toLowerCase().includes(lower)) ||
+            (p.type && p.type.toLowerCase().includes(lower)) ||
+            (p.value && p.value.toLowerCase().includes(lower)) ||
+            (p.notes && p.notes.toLowerCase().includes(lower))
+        );
+      }
+
+      if (!filtered.length) {
+        const div = document.createElement("div");
+        div.className = "empty";
+        div.textContent = prs.length
+          ? "No PRs match this filter."
+          : "No PRs yet. Add your first benchmark above.";
+        container.appendChild(div);
+        return;
+      }
+
+      filtered = [...filtered].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      thead.innerHTML = `
+        <tr>
+          <th>Date</th>
+          <th>Movement / Workout</th>
+          <th>Type</th>
+          <th>Value</th>
+          <th>Notes</th>
+        </tr>
+      `;
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+      filtered.forEach(pr => {
+        const dateText = pr.date ? formatDateHuman(pr.date) : "";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${dateText}</td>
+          <td>${pr.movement || ""}</td>
+          <td>${pr.type ? `<span class="pill">${pr.type}</span>` : ""}</td>
+          <td>${pr.value || ""}</td>
+          <td>${pr.notes || ""}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      table.appendChild(tbody);
+      container.appendChild(table);
+    }
+
+    // Timer logic
+    let timerInterval = null;
+    let timerSeconds = 0;
+
+    function updateTimerDisplay() {
+      const display = document.getElementById("timer-display");
+      const minutes = Math.floor(timerSeconds / 60);
+      const seconds = timerSeconds % 60;
+      display.textContent =
+        String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+    }
+
+    function startTimer() {
+      if (timerInterval !== null) return;
+      timerInterval = setInterval(() => {
+        timerSeconds += 1;
+        updateTimerDisplay();
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      if (timerInterval !== null) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      timerSeconds = 0;
+      updateTimerDisplay();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       const randomBtn = document.getElementById("random-wod-btn");
+      const wodModeSelect = document.getElementById("wod-mode");
       const logForm = document.getElementById("log-form");
       const clearBtn = document.getElementById("clear-data-btn");
       const filterInput = document.getElementById("filter-text");
       const resetFiltersBtn = document.getElementById("reset-filters-btn");
       const dateInput = document.getElementById("log-date");
 
+      const timerStartBtn = document.getElementById("timer-start-btn");
+      const timerPauseBtn = document.getElementById("timer-pause-btn");
+      const timerResetBtn = document.getElementById("timer-reset-btn");
+      const timerToLogBtn = document.getElementById("timer-to-log-btn");
+
+      const prForm = document.getElementById("pr-form");
+      const prClearBtn = document.getElementById("clear-prs-btn");
+      const prFilterInput = document.getElementById("pr-filter-text");
+      const prResetFiltersBtn = document.getElementById("pr-reset-filters-btn");
+
       dateInput.value = getTodayString();
 
-      let logs = loadLogs();
+      let logs = loadFromStorage(STORAGE_KEY_LOGS);
+      let prs = loadFromStorage(STORAGE_KEY_PRS);
       renderHistory(logs);
+      renderPRs(prs);
 
-      setWod(randomWod());
+      const initialMode = wodModeSelect.value;
+      setWod(randomWod(initialMode));
 
       randomBtn.addEventListener("click", () => {
-        setWod(randomWod());
+        const mode = wodModeSelect.value;
+        setWod(randomWod(mode));
+      });
+
+      wodModeSelect.addEventListener("change", () => {
+        const mode = wodModeSelect.value;
+        setWod(randomWod(mode));
       });
 
       logForm.addEventListener("submit", (e) => {
         e.preventDefault();
-        const date = dateInput.value;
         const workoutNameEl = document.getElementById("log-workout-name");
+
+        const date = dateInput.value;
         const workoutName = workoutNameEl.value.trim();
         const type = document.getElementById("log-type").value;
         const weight = document.getElementById("log-weight").value;
@@ -622,10 +876,9 @@
         };
 
         logs.push(entry);
-        saveLogs(logs);
+        saveToStorage(STORAGE_KEY_LOGS, logs);
         renderHistory(logs, filterInput.value.trim());
 
-        // Light reset: keep date & name, clear the rest
         document.getElementById("log-weight").value = "";
         document.getElementById("log-reps").value = "";
         document.getElementById("log-time").value = "";
@@ -634,10 +887,10 @@
       });
 
       clearBtn.addEventListener("click", () => {
-        const sure = confirm("This will delete all saved logs in this browser on this device. Continue?");
+        const sure = confirm("This will delete all saved workout logs in this browser on this device. Continue?");
         if (!sure) return;
         logs = [];
-        saveLogs(logs);
+        saveToStorage(STORAGE_KEY_LOGS, logs);
         renderHistory(logs, filterInput.value.trim());
       });
 
@@ -649,6 +902,67 @@
       resetFiltersBtn.addEventListener("click", () => {
         filterInput.value = "";
         renderHistory(logs, "");
+      });
+
+      timerStartBtn.addEventListener("click", startTimer);
+      timerPauseBtn.addEventListener("click", pauseTimer);
+      timerResetBtn.addEventListener("click", resetTimer);
+      timerToLogBtn.addEventListener("click", () => {
+        const minutes = Math.floor(timerSeconds / 60);
+        const seconds = timerSeconds % 60;
+        const value =
+          String(minutes).padStart(2, "0") + ":" + String(seconds).padStart(2, "0");
+        document.getElementById("log-time").value = value;
+      });
+      updateTimerDisplay();
+
+      prForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const movement = document.getElementById("pr-movement").value.trim();
+        const type = document.getElementById("pr-type").value;
+        const value = document.getElementById("pr-value").value.trim();
+        const notes = document.getElementById("pr-notes").value.trim();
+
+        if (!movement || !value) {
+          alert("Movement and value are required for a PR.");
+          return;
+        }
+
+        const pr = {
+          id: Date.now(),
+          movement,
+          type,
+          value,
+          notes,
+          date: getTodayString(),
+          createdAt: Date.now()
+        };
+
+        prs.push(pr);
+        saveToStorage(STORAGE_KEY_PRS, prs);
+        renderPRs(prs, prFilterInput.value.trim());
+
+        document.getElementById("pr-movement").value = "";
+        document.getElementById("pr-value").value = "";
+        document.getElementById("pr-notes").value = "";
+      });
+
+      prClearBtn.addEventListener("click", () => {
+        const sure = confirm("This will clear all PR entries on this device. Continue?");
+        if (!sure) return;
+        prs = [];
+        saveToStorage(STORAGE_KEY_PRS, prs);
+        renderPRs(prs, prFilterInput.value.trim());
+      });
+
+      prFilterInput.addEventListener("input", () => {
+        const text = prFilterInput.value.trim();
+        renderPRs(prs, text);
+      });
+
+      prResetFiltersBtn.addEventListener("click", () => {
+        prFilterInput.value = "";
+        renderPRs(prs, "");
       });
     });
   </script>
